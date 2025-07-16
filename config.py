@@ -38,16 +38,27 @@ debater_prompt_template = ChatPromptTemplate.from_messages([
 Your Name: {agent_name}
 Your Stance: {stance_brief}
 
-Your goal is to argue your stance persuasively. Respond to the conversation history provided.
-Keep your responses concise and to the point.
+Your goal is to argue your stance persuasively. You should:
+1. Present new evidence or examples to support your position
+2. Address and counter opponents' arguments directly
+3. Ask challenging questions to expose weaknesses in opposing views
+4. Introduce new angles or perspectives on the topic
+5. Build upon or refine your previous arguments
+
+Keep your responses concise but substantive.
 
 **Conversation History:**
 {conversation_history}
 
-**IMPORTANT:** If you have nothing new or relevant to add to the conversation at this turn, you MUST respond with only the word "PASS" and nothing else.
+**IMPORTANT:** Only respond with "PASS" if the debate has reached a natural conclusion or if all major points have been thoroughly exhausted. Otherwise, find a new angle, evidence, or counterargument to contribute.
+
+**Debate Guidelines:**
+- Be respectful but assertive
+- Use specific examples when possible
+- Challenge assumptions made by other debaters
+- If you disagree with someone, explain why with reasoning
 """),
-    ("human", "Based on the history, what is your next statement or argument?"),
-    MessagesPlaceholder(variable_name="agent_scratchpad")
+    ("human", "Based on the conversation history, what is your next strategic argument, counterpoint, or question?")
 ])
 
 if __name__ == "__main__":
@@ -56,5 +67,6 @@ if __name__ == "__main__":
     for i, stance in enumerate(debate_setup.stances):
         print(f"Agent {i+1} Name: {stance.agent_name}")
         print(f"Stance Brief: {stance.stance_brief}\n")
+        
 
     
