@@ -3,7 +3,7 @@ langchain-google-genai
 python-dotenv
 pydantic
 langchain-community 
-faiss-cpu 
+chromadb
 tavily-python 
 beautifulsoup4
 pypdf
