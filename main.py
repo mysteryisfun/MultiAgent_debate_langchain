@@ -1,50 +1,84 @@
+# /main.py
+
 import asyncio
 from agents.orchestrator import generate_debate_stances
 from agents.debater import DebaterAgent
+from langchain_core.messages import HumanMessage, AIMessage
 
-debate_topic="impact of social media on mental health"
-num_turns=4
+# --- Configuration ---
+DEBATE_TOPIC = "The feasibility and ethics of widespread drone delivery in urban areas."
+NUM_TURNS = 3 # Each agent speaks this many times.
 
-def format_history(history:list[str]) -> str:
-    """Formats the conversation history from the agent's scratchpad."""
-    if not history:
-        return "No conversation history yet."
-    return "\n".join(history)
 async def main():
-    print("starting debate on : ",debate_topic)
+    """
+    Main function to run the multi-agent debate with tool-using agents.
+    """
+    print(f"--- Starting Debate on: {DEBATE_TOPIC} ---")
+
+    # 1. Generate stances
     try:
-        stances=generate_debate_stances(debate_topic)
-        if not stances:
-            print("No stances generated. Exiting debate.")
+        stances = generate_debate_stances(DEBATE_TOPIC)
+        if len(stances) < 2:
+            print("\n❌ --- Debate Failed: Orchestrator needs at least 2 stances. --- ❌")
             return
     except Exception as e:
-        print(f"Error generating stances: {e}")
+        print(f"\n❌ --- Debate Failed during stance generation: {e} --- ❌")
         return
-    
-    agent_names=[f"Agent {chr(65+i)}" for i in range(len(stances))]
-    debaters=[
-        DebaterAgent(topic=debate_topic, stance=stance, agent_name=name)
-        for stance, name in zip(stances, agent_names)
+
+    # 2. Initialize Debater Agents
+    agent_names = [f"Agent {chr(65+i)}" for i in range(len(stances))] # Agent A, B, etc.
+    debaters = [
+        DebaterAgent(topic=DEBATE_TOPIC, stance=stance, agent_name=name)
+        for name, stance in zip(agent_names, stances)
     ]
-    print("Debaters initialized:")
-    for debater in debaters:
-        print(f"{debater.agent_name} - Stance: {debater.stance}")
+
+    print("\n--- The Debaters Have Assembled ---")
+    for agent in debaters:
+        print(f"- {agent.name}: {agent.stance}")
+    print("----------------------------------\n")
+
+    # 3. Run the Debate Loop
+    # The history now uses LangChain message objects, which is required by the agent executor.
+    conversation_history = [
+        HumanMessage(content=f"The debate on '{DEBATE_TOPIC}' will now begin. We have {len(debaters)} participants. Let's hear the opening statements.")
+    ]
     
-    conversation_history = [f"Moderator: The debate on '{debate_topic}' will now begin. We have {len(debaters)} participants. Let's hear the opening statements."]
-    
-    total_exchanges = len(debaters) * num_turns
-    
+    total_exchanges = len(debaters) * NUM_TURNS
+
     for i in range(total_exchanges):
         current_debater = debaters[i % len(debaters)]
         
-        history_str=format_history(conversation_history)
+        # The agent's generate_argument method now takes the list of messages directly.
+        argument = current_debater.generate_argument(conversation_history)
         
-        argument = current_debater.generate_arguments(history_str)
+        # The agent's response is now an AIMessage.
+        # We assign the agent's name to the message for clarity in the transcript.
+        agent_message = AIMessage(content=argument, name=current_debater.name)
         
-        turn_text=f"**{current_debater.agent_name}**: {argument}"
-        print(turn_text)
-        conversation_history.append(turn_text)
+        # Add the agent's response to the history
+        conversation_history.append(agent_message)
+        
+        # Print the turn to the console
+        print(f"\n**{current_debater.name}:** {argument}")
+
+    # 4. Print the final transcript
+    print("\n\n--- ✅ Debate Concluded ---")
+    print("--- Final Transcript ---")
+    for message in conversation_history:
+        if isinstance(message, HumanMessage):
+            # The initial moderator message
+            print(f"Moderator: {message.content}")
+        elif isinstance(message, AIMessage):
+            # Agent messages, using the name we assigned
+            print(f"**{message.name}:** {message.content}")
+    print("--------------------------")
+
+
+# --- Run the application ---
 if __name__ == "__main__":
-    print("Starting debate simulation...")
-    asyncio.run(main())
-    print("Debate simulation completed.")
+    try:
+        asyncio.run(main())
+    except Exception as e:
+        print(f"\n❌ --- A critical error occurred in the main loop: {e} --- ❌")
+        import traceback
+        traceback.print_exc()
