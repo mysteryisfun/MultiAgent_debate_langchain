@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live AI Debate Stage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="app-container">
+        <header>
+            <h1>Live AI Debate Stage</h1>
+            <p>Watch AI agents argue over hot topics in real time.</p>
+        </header>
+
+        <main id="debate-stage">
+            <div id="transcript-area">
+                <!-- Welcome Message -->
+                <div class="status-message">
+                    <p>Enter a topic below to begin the debate.</p>
+                </div>
+            </div>
+             <div id="agent-profiles" class="agent-profiles-container"></div>
+        </main>
+
+        <footer>
+            <form id="debate-form">
+                <input type="text" id="topic-input" placeholder="e.g., The future of artificial intelligence" required autocomplete="off">
+                <button type="submit" id="start-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg>
+                    <span>Start</span>
+                </button>
+            </form>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

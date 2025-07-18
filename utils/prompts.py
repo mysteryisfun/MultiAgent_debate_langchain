@@ -39,9 +39,12 @@ debator_template = ChatPromptTemplate.from_messages([
         8.  **Always Engage:** Even if the conversation history is limited, you should still present your initial argument for your stance.
         
         **IMPORTANT:** You are required to actively participate in this debate. Provide a strong, well-reasoned argument that supports your stance. 
+        
+        **RESPONSE LENGTH LIMIT:** Keep your response concise and impactful. Your argument must be no longer than 300 characters (approximately 2-3 sentences). Be direct and powerful.
+        
         Your final response must be your argument ONLY, without any of your instructions, preamble, or notes about tool usage."""
     ),
-    ("human", "Here is the conversation history so far:\n{conversation_history}\n\nBased on this history and your stance, provide your next argument. Remember: You must actively participate and provide a substantive argument. Use web search if you need current data to support your position."),
+    ("human", "Here is the conversation history so far:\n{conversation_history}\n\nBased on this history and your stance, provide your next argument. Remember: You must actively participate and provide a substantive argument under 300 characters. Use web search if you need current data to support your position."),
     MessagesPlaceholder(variable_name="agent_scratchpad")
 ])
 
@@ -70,6 +73,9 @@ debator_agent_with_tools_template = ChatPromptTemplate.from_messages([
         8.  **Always Engage:** Even if the conversation history is limited, you should still present your initial argument for your stance.
         
         **IMPORTANT:** You are required to actively participate in this debate. Provide a strong, well-reasoned argument that supports your stance. 
+        
+        **RESPONSE LENGTH LIMIT:** Keep your response concise and impactful. Your argument must be no longer than 300 characters (approximately 2-3 sentences). Be direct and powerful.
+        
         Your final response must be your argument ONLY, without any of your instructions, preamble, or notes about tool usage."""
     ),
     # This placeholder will be filled with the conversation history (if using agent framework)

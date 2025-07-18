@@ -1,5 +1,5 @@
 from langchain_core.tools import tool
-from langchain_community.document_loaders import TextLoader
+from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import CharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_community.vectorstores import Chroma
@@ -16,13 +16,14 @@ def _initialize_retriever():
         return _retriever
     print("Initializing Knowledge Base Retriever...")
     
-    loader = TextLoader("docs/nuclear_energy.txt")
+    # Load the PDF file instead of a text file
+    loader = PyPDFLoader("docs/ai_military.pdf")
     documents = loader.load()
     
-    text_splitter = CharacterTextSplitter(chunk_size=500, chunk_overlap=100)
+    text_splitter = CharacterTextSplitter(chunk_size=300, chunk_overlap=50)
     docs = text_splitter.split_documents(documents)
     
-    embeddings = GoogleGenerativeAIEmbeddings(model="models/embedding-001", google_api_key=os.getenv("google_api_key"))
+    embeddings = GoogleGenerativeAIEmbeddings(model="gemini-embedding-001", google_api_key=os.getenv("google_api_key"))
     
     db = Chroma.from_documents(docs, embeddings, persist_directory="chroma_db")
     _retriever = db.as_retriever(search_kwargs={"k": 1})
@@ -42,11 +43,11 @@ def knowledge_base_search(query: str) -> str:
     retriever = _initialize_retriever()
     
     docs = retriever.invoke(query)
-    return "\n\n".join([doc.page_content for doc in docs])
+    unique_docs = list({doc.page_content for doc in docs})  # Remove duplicates
+    return "\n\n".join(unique_docs)
 
 if __name__ == "__main__":
     print("testing KB")
     _initialize_retriever()
-    query = "What are the main ethical concerns regarding nuclear energy"
-    
+    query = "What are the main ethical concerns regarding AI in military applications"
     print(knowledge_base_search(query))

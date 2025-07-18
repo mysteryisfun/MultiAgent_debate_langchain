@@ -1,2 +1,7 @@
 .env
 venv
+chroma_db/*
+__pycache__/
+#remove pycache files from inside directories too
+**/__pycache__/*
+*.pyc
